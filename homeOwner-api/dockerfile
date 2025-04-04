@@ -1,0 +1,44 @@
+# Use the official PHP image with FPM (FastCGI Process Manager) as the base image
+FROM php:8.2-fpm
+
+# Set the working directory inside the container
+WORKDIR /var/www/html
+
+# Install dependencies needed for PHP (such as gd, zip, etc.)
+RUN apt-get update && apt-get install -y \
+    libpng-dev libjpeg62-turbo-dev libfreetype6-dev zip git curl \
+    libxml2-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd xml
+
+# Install Node.js (which includes npm) for frontend dependencies
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
+
+# Install Composer (PHP package manager)
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy the entire project into the container (including artisan, composer.json, package.json, etc.)
+COPY . /var/www/html/
+
+# Ensure all files have the right permissions for the web server
+RUN chown -R www-data:www-data /var/www/html
+
+# Install frontend dependencies using npm
+RUN npm install
+
+# Install Laravel's PHP dependencies via Composer
+RUN composer install --no-dev --optimize-autoloader
+
+# Ensure the artisan file is executable (important if you’re running artisan commands)
+RUN chmod +x /var/www/html/artisan
+
+# Create storage and bootstrap/cache directories, and set permissions
+RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache && \
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Expose the PHP-FPM port
+EXPOSE 9000
+
+# Start PHP-FPM server
+CMD ["php-fpm"]

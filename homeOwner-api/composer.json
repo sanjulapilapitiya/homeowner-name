@@ -1,0 +1,45 @@
+{
+    "name": "laravel/laravel",
+    "description": "The Laravel Framework.",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "laravel/tinker": "^2.10.1"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "laravel/pail": "^1.2.2",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.41",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^11.5.3"
+    },
+    "autoload": {
+      "psr-4": {
+        "App\\": "app/"
+      }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Tests\\": "tests/"
+      }
+    },
+    "scripts": {
+      "post-root-package-install": [
+        "file-system-cache-clear",
+        "file-system-cache-generate"
+      ],
+      "post-create-project-cmd": [
+        "@php artisan key:generate"
+      ]
+    },
+    "config": {
+      "optimize-autoloader": true,
+      "preferred-install": "dist"
+    }
+  }
+  
